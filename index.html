@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Connecting...</title>
+  <style>
+    body {
+      background-color: black;
+      color: lime;
+      font-family: monospace;
+      font-size: 1.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      flex-direction: column;
+      margin: 0;
+    }
+    .hidden {
+      display: none;
+    }
+    a {
+      color: red;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="line1">Tracking THE LOCATION OF YOU FOR CUSTOMER SERVICES...</div>
+  <div id="line2" class="hidden"></div>
+  <div id="line3" class="hidden">
+    <br />
+    THANKS U MAY NOW CONTINUE YOU SHOPING<br />
+    <a href="https://youtu.be/dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer">Watch your back 😈</a>
+  </div>
+
+  <!-- Firebase CDN scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Replace with your Firebase project config
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0oYgM-fPXow1bYNGlJO-BjXYaANNRtCI",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const line1 = document.getElementById('line1');
+    const line2 = document.getElementById('line2');
+    const line3 = document.getElementById('line3');
+
+    fetch('https://ipapi.co/json/')
+      .then(res => res.json())
+      .then(async (data) => {
+        // Save visitor info to Firestore
+        try {
+          await db.collection('visitors').add({
+            ip: data.ip,
+            city: data.city,
+            country: data.country_name,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          console.log('Visitor info saved to Firestore');
+        } catch (e) {
+          console.error('Error saving visitor info:', e);
+        }
+
+        setTimeout(() => {
+          line2.textContent = `SUCCESSFULLY TRACKED YOUR IP: ${data.ip} (${data.city}, ${data.country_name})`;
+          line2.classList.remove('hidden');
+          line1.classList.add('hidden');
+        }, 2000);
+
+        setTimeout(() => {
+          line2.classList.add('hidden');
+          line3.classList.remove('hidden');
+        }, 4000);
+      })
+      .catch(() => {
+        setTimeout(() => {
+          line2.textContent = 'SUCCESSFULLY TRACKED YOUR IP: [UNKNOWN]';
+          line2.classList.remove('hidden');
+          line1.classList.add('hidden');
+        }, 2000);
+
+        setTimeout(() => {
+          line2.classList.add('hidden');
+          line3.classList.remove('hidden');
+        }, 4000);
+      });
+  </script>
+</body>
+</html>
